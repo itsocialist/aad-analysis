@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AAD Corpus Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --border:   #30363d;
+      --accent:   #58a6ff;
+      --text:     #e6edf3;
+      --muted:    #8b949e;
+      --green:    #3fb950;
+      --yellow:   #d4a017;
+      --red:      #f85149;
+      --purple:   #bc8cff;
+      --orange:   #ffa657;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 24px;
+    }
+
+    /* ── Header ── */
+    .header {
+      max-width: 1200px;
+      margin: 0 auto 32px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-text h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .header-text p {
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 15px;
+    }
+
+    .contribute-btn {
+      display: inline-block;
+      padding: 8px 18px;
+      background: var(--accent);
+      color: #0d1117;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .contribute-btn:hover { opacity: 0.85; }
+
+    /* ── Grid ── */
+    .grid {
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 800px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .card h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 280px;
+    }
+
+    /* ── Stats Grid (Card 6) ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .stat-cell {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+
+    .stat-cell .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+
+    .stat-cell .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ── Table ── */
+    .table-section {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .table-section h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      background: var(--surface);
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+
+    thead th:hover { color: var(--text); }
+    thead th.sort-asc::after  { content: " ↑"; color: var(--accent); }
+    thead th.sort-desc::after { content: " ↓"; color: var(--accent); }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(88, 166, 255, 0.05); }
+
+    tbody td {
+      padding: 9px 14px;
+      vertical-align: middle;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-yes     { background: rgba(63, 185, 80, 0.15);  color: var(--green); }
+    .badge-partial { background: rgba(212, 160, 23, 0.15); color: var(--yellow); }
+    .badge-no      { background: rgba(139, 148, 158, 0.15); color: var(--muted); }
+
+    .category-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(88, 166, 255, 0.12);
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────── -->
+<header class="header">
+  <div class="header-text">
+    <h1>AAD Corpus</h1>
+    <p>Community git archaeology data for AI-assisted development research</p>
+  </div>
+  <a class="contribute-btn" href="../CONTRIBUTE.md">Contribute Your Project →</a>
+</header>
+
+<!-- ── Chart Grid ─────────────────────────────────────────── -->
+<div class="grid">
+
+  <!-- Card 1: Bubble — Scale vs Duration -->
+  <div class="card">
+    <h2>Project Scale vs. Duration</h2>
+    <div class="chart-container">
+      <canvas id="chart-bubble"></canvas>
+    </div>
+  </div>
+
+  <!-- Card 2: Horizontal Bar — Fix/Feat Ratio -->
+  <div class="card">
+    <h2>Fix/Feat Ratio (second half of project)</h2>
+    <div class="chart-container">
+      <canvas id="chart-fixfeat"></canvas>
+    </div>
+  </div>
+
+  <!-- Card 3: Scatter — Test Ratio Trajectory -->
+  <div class="card">
+    <h2>Test Coverage: Start vs. End (%)</h2>
+    <div class="chart-container">
+      <canvas id="chart-test"></canvas>
+    </div>
+  </div>
+
+  <!-- Card 4: Bar — Max Gap Hours -->
+  <div class="card">
+    <h2>Longest Single Gap (hours)</h2>
+    <div class="chart-container">
+      <canvas id="chart-gap"></canvas>
+    </div>
+  </div>
+
+  <!-- Card 5: Grouped Bar — Fix/Feat First vs Second Half -->
+  <div class="card">
+    <h2>Rework Ratio: First Half vs. Second Half</h2>
+    <div class="chart-container">
+      <canvas id="chart-rework"></canvas>
+    </div>
+  </div>
+
+  <!-- Card 6: Stats Grid -->
+  <div class="card">
+    <h2>Corpus Summary</h2>
+    <div class="stats-grid" id="stats-grid"></div>
+  </div>
+
+</div>
+
+<!-- ── Data Table ──────────────────────────────────────────── -->
+<section class="table-section">
+  <h2>All Projects</h2>
+  <div class="table-wrapper">
+    <table id="corpus-table">
+      <thead>
+        <tr>
+          <th data-col="project_name">Project</th>
+          <th data-col="primary_language">Language</th>
+          <th data-col="framework">Framework</th>
+          <th data-col="total_commits" data-type="number">Commits</th>
+          <th data-col="loc_last" data-type="number">LOC</th>
+          <th data-col="test_ratio_last" data-type="number">Test%</th>
+          <th data-col="fix_feat_ratio_second_half" data-type="number">Fix/Feat</th>
+          <th data-col="max_gap_hours" data-type="number">Gap(h)</th>
+          <th data-col="ai_assisted">AI?</th>
+          <th data-col="category">Category</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+// ── Corpus Data ────────────────────────────────────────────
+const CORPUS = [
+  {
+    project_name: "Booth",
+    primary_language: "TypeScript",
+    framework: "Next.js 15 + tRPC + Prisma + Supabase",
+    ai_assisted: "yes",
+    total_commits: 83,
+    date_range_days: 19,
+    snapshot_count: 10,
+    fix_feat_ratio_first_half: 0.43,
+    fix_feat_ratio_second_half: 0.55,
+    median_gap_hours_first_half: 0.11,
+    median_gap_hours_second_half: 0.25,
+    dominant_rework_topic: "auth",
+    explicit_iteration_commits: 1,
+    rollback_commits: 0,
+    loc_first: 5475,
+    loc_last: 18656,
+    test_ratio_first: 0.0,
+    test_ratio_last: 0.135,
+    max_gap_hours: 252,
+    max_gap_context: "mid-project pause between sprint phases — 11-day real-world break before next sprint resumed",
+    category: "weekend-sprint"
+  },
+  {
+    project_name: "Coach",
+    primary_language: "TypeScript",
+    framework: "Next.js 15 / Supabase / Vercel",
+    ai_assisted: "yes",
+    total_commits: 416,
+    date_range_days: 73,
+    snapshot_count: 10,
+    fix_feat_ratio_first_half: 1.44,
+    fix_feat_ratio_second_half: 1.69,
+    median_gap_hours_first_half: 0.17,
+    median_gap_hours_second_half: 0.16,
+    dominant_rework_topic: "voice",
+    explicit_iteration_commits: 44,
+    rollback_commits: 5,
+    loc_first: 3550,
+    loc_last: 41029,
+    test_ratio_first: 0.0,
+    test_ratio_last: 0.049,
+    max_gap_hours: 705,
+    max_gap_context: "29-day calendar gap between sprint phases — single large commit aggregated offline work",
+    category: "sustained"
+  },
+  {
+    project_name: "Buzzer",
+    primary_language: "JavaScript",
+    framework: "React + Vite + Express + Socket.io",
+    ai_assisted: "yes",
+    total_commits: 109,
+    date_range_days: 106,
+    snapshot_count: 10,
+    fix_feat_ratio_first_half: 1.00,
+    fix_feat_ratio_second_half: 0.55,
+    median_gap_hours_first_half: 0.11,
+    median_gap_hours_second_half: 0.08,
+    dominant_rework_topic: "gameplay (socket state)",
+    explicit_iteration_commits: 1,
+    rollback_commits: 0,
+    loc_first: 3600,
+    loc_last: 9763,
+    test_ratio_first: 0.0,
+    test_ratio_last: 0.025,
+    max_gap_hours: 1146,
+    max_gap_context: "47-day dormancy between initial burst and a later feature sprint",
+    category: "sustained"
+  },
+  {
+    project_name: "Orchestra",
+    primary_language: "TypeScript",
+    framework: "MCP SDK + SQLite",
+    ai_assisted: "yes",
+    total_commits: 2,
+    date_range_days: 0,
+    snapshot_count: 2,
+    fix_feat_ratio_first_half: 0.0,
+    fix_feat_ratio_second_half: 0.0,
+    median_gap_hours_first_half: 0.02,
+    median_gap_hours_second_half: 0.02,
+    dominant_rework_topic: "entry-point consolidation",
+    explicit_iteration_commits: 0,
+    rollback_commits: 0,
+    loc_first: 21050,
+    loc_last: 21050,
+    test_ratio_first: 0.55,
+    test_ratio_last: 0.55,
+    max_gap_hours: 0.03,
+    max_gap_context: "2 commits 2 minutes apart; full history predates git",
+    category: "multi-week"
+  },
+  {
+    project_name: "Pipeline",
+    primary_language: "JavaScript",
+    framework: "Electron + Vite + D3.js",
+    ai_assisted: "yes",
+    total_commits: 315,
+    date_range_days: 123,
+    snapshot_count: 10,
+    fix_feat_ratio_first_half: 0.51,
+    fix_feat_ratio_second_half: 0.51,
+    median_gap_hours_first_half: 0.08,
+    median_gap_hours_second_half: 0.08,
+    dominant_rework_topic: "visualization/D3",
+    explicit_iteration_commits: 1,
+    rollback_commits: 1,
+    loc_first: 0,
+    loc_last: 42398,
+    test_ratio_first: 0.0,
+    test_ratio_last: 0.045,
+    max_gap_hours: 2280,
+    max_gap_context: "major hiatus of approximately 95 days between mid-project sprint phases",
+    category: "sustained"
+  },
+  {
+    project_name: "Bastion",
+    primary_language: "YAML/Shell",
+    framework: "ComplianceAsCode / SCAP Security Guide",
+    ai_assisted: "yes",
+    total_commits: 88,
+    date_range_days: 162,
+    snapshot_count: 10,
+    fix_feat_ratio_first_half: 0.889,
+    fix_feat_ratio_second_half: 1.0,
+    median_gap_hours_first_half: 0.52,
+    median_gap_hours_second_half: 0.29,
+    dominant_rework_topic: "ci/build",
+    explicit_iteration_commits: 24,
+    rollback_commits: 1,
+    loc_first: 462301,
+    loc_last: 474595,
+    test_ratio_first: 0.0073,
+    test_ratio_last: 0.0107,
+    max_gap_hours: 1174.71,
+    max_gap_context: "dormancy period between initial scaffold and main development phase",
+    category: "sustained"
+  },
+  {
+    project_name: "Prism",
+    primary_language: "TypeScript",
+    framework: "Vite + React + Node.js (lens pipeline)",
+    ai_assisted: "yes",
+    total_commits: 254,
+    date_range_days: 53,
+    snapshot_count: 10,
+    fix_feat_ratio_first_half: 0.88,
+    fix_feat_ratio_second_half: 0.51,
+    median_gap_hours_first_half: 0.12,
+    median_gap_hours_second_half: 0.15,
+    dominant_rework_topic: "UI/CSS",
+    explicit_iteration_commits: 3,
+    rollback_commits: 0,
+    loc_first: 2750,
+    loc_last: 50687,
+    test_ratio_first: 0.0,
+    test_ratio_last: 0.012,
+    max_gap_hours: 256,
+    max_gap_context: "256h gap between Sprint 4 and next active session",
+    category: "multi-week"
+  },
+  {
+    project_name: "Forge",
+    primary_language: "TypeScript",
+    framework: "Next.js 16 + Supabase + Stripe + Anthropic SDK",
+    ai_assisted: "yes",
+    total_commits: 293,
+    date_range_days: 141,
+    snapshot_count: 10,
+    fix_feat_ratio_first_half: 0.85,
+    fix_feat_ratio_second_half: 0.85,
+    median_gap_hours_first_half: 0.15,
+    median_gap_hours_second_half: 0.18,
+    dominant_rework_topic: "auth/RBAC + marketplace UI",
+    explicit_iteration_commits: 1,
+    rollback_commits: 1,
+    loc_first: 0,
+    loc_last: 44947,
+    test_ratio_first: 0.0,
+    test_ratio_last: 0.014,
+    max_gap_hours: 2236,
+    max_gap_context: "3-month hiatus after monetization sprint; project shifted to maintenance/strategic mode",
+    category: "sustained"
+  },
+  {
+    project_name: "Helm",
+    primary_language: "TypeScript",
+    framework: "Next.js 14 + Prisma + SwiftUI iOS",
+    ai_assisted: "yes",
+    total_commits: 158,
+    date_range_days: 59,
+    snapshot_count: 10,
+    fix_feat_ratio_first_half: 0.85,
+    fix_feat_ratio_second_half: 0.85,
+    median_gap_hours_first_half: 0.12,
+    median_gap_hours_second_half: 0.15,
+    dominant_rework_topic: "TypeScript migration + Prisma persistence",
+    explicit_iteration_commits: 1,
+    rollback_commits: 0,
+    loc_first: 0,
+    loc_last: 24835,
+    test_ratio_first: 0.0,
+    test_ratio_last: 0.020,
+    max_gap_hours: 912,
+    max_gap_context: "38-day gap between active development phases — integration/testing period off-main",
+    category: "multi-week"
+  },
+  {
+    project_name: "Warden",
+    primary_language: "YAML/Shell",
+    framework: "Ansible (DISA STIG + CIS Benchmark)",
+    ai_assisted: "partial",
+    total_commits: 132,
+    date_range_days: 81,
+    snapshot_count: 10,
+    fix_feat_ratio_first_half: 0.40,
+    fix_feat_ratio_second_half: 0.60,
+    median_gap_hours_first_half: 0.5,
+    median_gap_hours_second_half: 0.5,
+    dominant_rework_topic: "compliance controls",
+    explicit_iteration_commits: 2,
+    rollback_commits: 2,
+    loc_first: 6860,
+    loc_last: 18500,
+    test_ratio_first: 0.0,
+    test_ratio_last: 0.020,
+    max_gap_hours: 1735,
+    max_gap_context: "1735h between project release day and post-release fix — project completed, then dormant",
+    category: "weekend-sprint"
+  },
+  {
+    project_name: "Harvest",
+    primary_language: "Python",
+    framework: "FastAPI + Agents",
+    ai_assisted: "yes",
+    total_commits: 50,
+    date_range_days: 14,
+    snapshot_count: 10,
+    fix_feat_ratio_first_half: 0.40,
+    fix_feat_ratio_second_half: 0.30,
+    median_gap_hours_first_half: 0.15,
+    median_gap_hours_second_half: 0.20,
+    dominant_rework_topic: "brand/CSS",
+    explicit_iteration_commits: 1,
+    rollback_commits: 1,
+    loc_first: 3695,
+    loc_last: 6836,
+    test_ratio_first: 0.208,
+    test_ratio_last: 0.252,
+    max_gap_hours: 288,
+    max_gap_context: "Gap between sprint phases (approximately 12 days)",
+    category: "multi-week"
+  }
+];
+
+// ── Color helpers ──────────────────────────────────────────
+const CATEGORY_COLORS = {
+  "single-session": "#bc8cff",
+  "weekend-sprint": "#ffa657",
+  "multi-week":     "#58a6ff",
+  "sustained":      "#3fb950",
+  "enterprise":     "#f85149"
+};
+
+function fixFeatColor(ratio) {
+  if (ratio < 0.5)  return "#3fb950";
+  if (ratio <= 1.0) return "#d4a017";
+  return "#f85149";
+}
+
+function aiColor(ai) {
+  if (ai === "yes")     return "#58a6ff";
+  if (ai === "partial") return "#d4a017";
+  return "#6e7681";
+}
+
+// ── Chart defaults ─────────────────────────────────────────
+Chart.defaults.color = "#8b949e";
+Chart.defaults.borderColor = "#30363d";
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+Chart.defaults.font.size = 12;
+
+// ── Card 1: Bubble — Scale vs Duration ───────────────────
+(function() {
+  const datasets = CORPUS.map(p => ({
+    label: p.project_name,
+    data: [{
+      x: Math.max(p.date_range_days, 0.5),
+      y: Math.max(p.loc_last, 100),
+      r: Math.sqrt(p.total_commits) * 3
+    }],
+    backgroundColor: fixFeatColor(p.fix_feat_ratio_second_half) + "99",
+    borderColor:     fixFeatColor(p.fix_feat_ratio_second_half),
+    borderWidth: 1.5
+  }));
+
+  new Chart(document.getElementById("chart-bubble"), {
+    type: "bubble",
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          type: "logarithmic",
+          min: 0.4,
+          max: 300,
+          title: { display: true, text: "Duration (days, log)", color: "#8b949e" },
+          grid: { color: "#21262d" }
+        },
+        y: {
+          type: "logarithmic",
+          min: 500,
+          max: 600000,
+          title: { display: true, text: "LOC at HEAD (log)", color: "#8b949e" },
+          grid: { color: "#21262d" }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              const p = CORPUS.find(d => d.project_name === ctx.dataset.label);
+              return [
+                ctx.dataset.label,
+                p.primary_language,
+                `${p.total_commits} commits`
+              ];
+            }
+          }
+        }
+      }
+    }
+  });
+})();
+
+// ── Card 2: Horizontal Bar — Fix/Feat (2nd half) ─────────
+(function() {
+  const sorted = [...CORPUS].sort((a, b) =>
+    a.fix_feat_ratio_second_half - b.fix_feat_ratio_second_half
+  );
+  const labels = sorted.map(p => p.project_name);
+  const values = sorted.map(p => p.fix_feat_ratio_second_half);
+  const colors = sorted.map(p => aiColor(p.ai_assisted));
+
+  const refLine = {
+    id: "refline",
+    beforeDraw(chart) {
+      const { ctx, scales: { x } } = chart;
+      const xPos = x.getPixelForValue(1.0);
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(xPos, chart.chartArea.top);
+      ctx.lineTo(xPos, chart.chartArea.bottom);
+      ctx.strokeStyle = "#f85149";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
+
+  new Chart(document.getElementById("chart-fixfeat"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderRadius: 3,
+        barThickness: 14
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          min: 0,
+          title: { display: true, text: "fix/feat ratio", color: "#8b949e" },
+          grid: { color: "#21262d" }
+        },
+        y: { grid: { display: false } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              const p = CORPUS.find(d => d.project_name === ctx.label);
+              return [
+                `Fix/Feat 2nd half: ${ctx.parsed.x.toFixed(2)}`,
+                `AI: ${p.ai_assisted}`
+              ];
+            }
+          }
+        }
+      }
+    },
+    plugins: [refLine]
+  });
+})();
+
+// ── Card 3: Scatter — Test Coverage Start vs End ─────────
+(function() {
+  const abbrev = name => name.length > 12 ? name.slice(0, 10) + "…" : name;
+
+  const points = CORPUS.map(p => ({
+    x: p.test_ratio_first * 100,
+    y: p.test_ratio_last * 100,
+    label: abbrev(p.project_name)
+  }));
+
+  const labelPlugin = {
+    id: "pointlabels",
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.font = "11px -apple-system, sans-serif";
+      ctx.fillStyle = "#8b949e";
+      chart.data.datasets[0].data.forEach((pt, i) => {
+        const meta = chart.getDatasetMeta(0);
+        const el = meta.data[i];
+        if (!el) return;
+        ctx.fillText(points[i].label, el.x + 6, el.y - 4);
+      });
+      ctx.restore();
+    }
+  };
+
+  // reference line y=x
+  const diagonalPlugin = {
+    id: "diagonal",
+    beforeDraw(chart) {
+      const { ctx, scales: { x, y } } = chart;
+      const maxVal = Math.max(
+        x.max || 60,
+        y.max || 60
+      );
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x.getPixelForValue(0), y.getPixelForValue(0));
+      ctx.lineTo(x.getPixelForValue(maxVal), y.getPixelForValue(maxVal));
+      ctx.strokeStyle = "#30363d";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([6, 3]);
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
+
+  new Chart(document.getElementById("chart-test"), {
+    type: "scatter",
+    data: {
+      datasets: [{
+        data: points.map(p => ({ x: p.x, y: p.y })),
+        backgroundColor: "#58a6ff99",
+        borderColor: "#58a6ff",
+        borderWidth: 1.5,
+        pointRadius: 7,
+        pointHoverRadius: 9
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          min: 0,
+          title: { display: true, text: "Test % at genesis", color: "#8b949e" },
+          grid: { color: "#21262d" }
+        },
+        y: {
+          min: 0,
+          title: { display: true, text: "Test % at HEAD", color: "#8b949e" },
+          grid: { color: "#21262d" }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              return [
+                CORPUS[ctx.dataIndex].project_name,
+                `Start: ${ctx.parsed.x.toFixed(1)}%`,
+                `End:   ${ctx.parsed.y.toFixed(1)}%`
+              ];
+            }
+          }
+        }
+      }
+    },
+    plugins: [labelPlugin, diagonalPlugin]
+  });
+})();
+
+// ── Card 4: Bar — Max Gap Hours ───────────────────────────
+(function() {
+  const sorted = [...CORPUS].sort((a, b) => b.max_gap_hours - a.max_gap_hours);
+  const labels = sorted.map(p => p.project_name);
+  const values = sorted.map(p => Math.min(p.max_gap_hours, 1500));
+  const colors = sorted.map(p => CATEGORY_COLORS[p.category] || "#58a6ff");
+
+  new Chart(document.getElementById("chart-gap"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderRadius: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          max: 1600,
+          title: { display: true, text: "hours (capped at 1500)", color: "#8b949e" },
+          grid: { color: "#21262d" }
+        },
+        x: {
+          ticks: { maxRotation: 45, font: { size: 10 } },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              const p = CORPUS.find(d => d.project_name === ctx.label);
+              const actual = p.max_gap_hours;
+              const capped = actual > 1500;
+              return [
+                `Gap: ${actual.toFixed(0)}h${capped ? " (display capped at 1500)": ""}`,
+                p.max_gap_context
+              ];
+            }
+          }
+        }
+      }
+    }
+  });
+})();
+
+// ── Card 5: Grouped Bar — First Half vs Second Half ───────
+(function() {
+  const labels = CORPUS.map(p => p.project_name);
+  new Chart(document.getElementById("chart-rework"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "First Half",
+          data: CORPUS.map(p => p.fix_feat_ratio_first_half),
+          backgroundColor: "#58a6ff55",
+          borderColor: "#58a6ff",
+          borderWidth: 1,
+          borderRadius: 2
+        },
+        {
+          label: "Second Half",
+          data: CORPUS.map(p => p.fix_feat_ratio_second_half),
+          backgroundColor: "#58a6ff",
+          borderColor: "#58a6ff",
+          borderWidth: 1,
+          borderRadius: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          title: { display: true, text: "fix/feat ratio", color: "#8b949e" },
+          grid: { color: "#21262d" }
+        },
+        x: {
+          ticks: { maxRotation: 45, font: { size: 10 } },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: "#8b949e", boxWidth: 12, font: { size: 11 } }
+        }
+      }
+    }
+  });
+})();
+
+// ── Card 6: Stats Grid ────────────────────────────────────
+(function() {
+  const n = CORPUS.length;
+
+  function median(arr) {
+    const s = [...arr].sort((a, b) => a - b);
+    const m = Math.floor(s.length / 2);
+    return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+  }
+
+  const fixFeatAll = CORPUS.map(p => p.fix_feat_ratio_second_half);
+  const testRatiosLast = CORPUS.map(p => p.test_ratio_last);
+  const gapsAll = CORPUS.map(p => p.max_gap_hours);
+  const commitsAll = CORPUS.map(p => p.total_commits);
+  const locAll = CORPUS.map(p => p.loc_last);
+  const daysAll = CORPUS.map(p => p.date_range_days);
+
+  const medFixFeat = median(fixFeatAll).toFixed(2);
+  const medTestRatio = (median(testRatiosLast) * 100).toFixed(1) + "%";
+  const pct10Test = CORPUS.filter(p => p.test_ratio_last >= 0.10).length;
+  const aiPct = Math.round(CORPUS.filter(p => p.ai_assisted === "yes").length / n * 100) + "%";
+  const medGap = Math.round(median(gapsAll)) + "h";
+  const medCommits = Math.round(median(commitsAll));
+  const totalLoc = locAll.reduce((a, b) => a + b, 0).toLocaleString();
+  const medDays = Math.round(median(daysAll)) + "d";
+
+  const stats = [
+    { value: medFixFeat, label: "Median Fix/Feat" },
+    { value: medTestRatio, label: "Median Test (final)" },
+    { value: pct10Test + "/" + n, label: "Projects ≥10% tests" },
+    { value: aiPct, label: "AI-assisted" },
+    { value: medGap, label: "Median max gap" },
+    { value: medCommits, label: "Median commits" },
+    { value: totalLoc, label: "Total corpus LOC" },
+    { value: medDays, label: "Median active days" }
+  ];
+
+  const grid = document.getElementById("stats-grid");
+  stats.forEach(s => {
+    const cell = document.createElement("div");
+    cell.className = "stat-cell";
+    cell.innerHTML = `<span class="stat-value">${s.value}</span><span class="stat-label">${s.label}</span>`;
+    grid.appendChild(cell);
+  });
+})();
+
+// ── Data Table + Sort ─────────────────────────────────────
+(function() {
+  const tbody = document.getElementById("table-body");
+  let sortCol = "total_commits";
+  let sortAsc = false;
+
+  function buildRows(data) {
+    tbody.innerHTML = "";
+    data.forEach(p => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${p.project_name}</td>
+        <td>${p.primary_language}</td>
+        <td style="font-size:12px;color:var(--muted)">${p.framework}</td>
+        <td>${p.total_commits.toLocaleString()}</td>
+        <td>${p.loc_last.toLocaleString()}</td>
+        <td>${(p.test_ratio_last * 100).toFixed(1)}%</td>
+        <td>${p.fix_feat_ratio_second_half.toFixed(2)}</td>
+        <td>${p.max_gap_hours >= 1000
+              ? p.max_gap_hours.toFixed(0)
+              : p.max_gap_hours.toFixed(1)}</td>
+        <td><span class="badge badge-${p.ai_assisted}">${p.ai_assisted}</span></td>
+        <td><span class="category-badge">${p.category}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function sortData(col, type) {
+    const sorted = [...CORPUS].sort((a, b) => {
+      let va = a[col], vb = b[col];
+      if (type === "number") { va = +va || 0; vb = +vb || 0; }
+      else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
+      if (va < vb) return sortAsc ? -1 : 1;
+      if (va > vb) return sortAsc ? 1 : -1;
+      return 0;
+    });
+    buildRows(sorted);
+  }
+
+  // Initial render
+  buildRows([...CORPUS].sort((a, b) => b.total_commits - a.total_commits));
+
+  // Header click handlers
+  document.querySelectorAll("#corpus-table thead th").forEach(th => {
+    th.addEventListener("click", () => {
+      const col = th.dataset.col;
+      const type = th.dataset.type || "string";
+      if (sortCol === col) {
+        sortAsc = !sortAsc;
+      } else {
+        sortCol = col;
+        sortAsc = type === "number" ? false : true;
+      }
+      document.querySelectorAll("#corpus-table thead th").forEach(h => {
+        h.classList.remove("sort-asc", "sort-desc");
+      });
+      th.classList.add(sortAsc ? "sort-asc" : "sort-desc");
+      sortData(col, type);
+    });
+  });
+})();
+</script>
+</body>
+</html>

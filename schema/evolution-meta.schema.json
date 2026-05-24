@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/briandawson/aad-analysis/schema/evolution-meta.schema.json",
+  "title": "AAD Evolution Meta",
+  "description": "Cross-project comparison metadata for AI-assisted development corpus",
+  "type": "object",
+  "required": [
+    "project_name",
+    "primary_language",
+    "framework",
+    "ai_assisted",
+    "total_commits",
+    "date_range_days",
+    "snapshot_count",
+    "fix_feat_ratio_first_half",
+    "fix_feat_ratio_second_half",
+    "median_gap_hours_first_half",
+    "median_gap_hours_second_half",
+    "dominant_rework_topic",
+    "explicit_iteration_commits",
+    "rollback_commits",
+    "loc_first",
+    "loc_last",
+    "test_ratio_first",
+    "test_ratio_last",
+    "max_gap_hours",
+    "max_gap_context"
+  ],
+  "properties": {
+    "project_name": {
+      "type": "string",
+      "description": "Human-readable project name (may be genericized for anonymization)"
+    },
+    "primary_language": {
+      "type": "string",
+      "description": "Primary programming language(s) of the project"
+    },
+    "framework": {
+      "type": "string",
+      "description": "Primary framework(s) or runtime stack"
+    },
+    "ai_assisted": {
+      "type": "string",
+      "enum": ["yes", "partial", "unknown", "no"],
+      "description": "Degree of AI assistance used during development"
+    },
+    "total_commits": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Total number of commits in the repository"
+    },
+    "date_range_days": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Calendar days from first commit to last commit"
+    },
+    "snapshot_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Number of strategic snapshots analyzed (typically 5-10)"
+    },
+    "fix_feat_ratio_first_half": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Ratio of fix commits to feat commits in the first half of the project timeline"
+    },
+    "fix_feat_ratio_second_half": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Ratio of fix commits to feat commits in the second half of the project timeline"
+    },
+    "median_gap_hours_first_half": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Median inter-commit gap in hours during the first half of the project"
+    },
+    "median_gap_hours_second_half": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Median inter-commit gap in hours during the second half of the project"
+    },
+    "dominant_rework_topic": {
+      "type": "string",
+      "description": "The subsystem or concern that dominated rework commits (e.g. auth, UI/CSS, schema)"
+    },
+    "explicit_iteration_commits": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Count of commits with explicit iteration markers (v2, attempt, retry, revert, rollback, etc.)"
+    },
+    "rollback_commits": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Count of explicit rollback or revert commits"
+    },
+    "loc_first": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Lines of code at first (genesis) snapshot"
+    },
+    "loc_last": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Lines of code at final (HEAD) snapshot"
+    },
+    "test_ratio_first": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Ratio of test LOC to source LOC at genesis snapshot (0.0 to 1.0)"
+    },
+    "test_ratio_last": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Ratio of test LOC to source LOC at HEAD snapshot (0.0 to 1.0)"
+    },
+    "max_gap_hours": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Longest single inter-commit gap in hours"
+    },
+    "max_gap_context": {
+      "type": "string",
+      "description": "Human-readable description of what was happening during the longest gap"
+    },
+    "contributor": {
+      "type": "string",
+      "description": "GitHub handle of the person submitting to the corpus"
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO 8601 date when this entry was submitted to the corpus"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["single-session", "weekend-sprint", "multi-week", "sustained", "enterprise"],
+      "description": "Project scale/duration classification"
+    },
+    "notes": {
+      "type": "object",
+      "description": "Freeform additional metadata; project-specific annotations",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

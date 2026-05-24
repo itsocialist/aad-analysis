@@ -1,0 +1,43 @@
+{
+  "project_name": "Pipeline",
+  "primary_language": "JavaScript",
+  "framework": "Electron + Vite + D3.js",
+  "ai_assisted": "yes",
+  "total_commits": 315,
+  "date_range_days": 123,
+  "snapshot_count": 10,
+  "fix_feat_ratio_first_half": 0.51,
+  "fix_feat_ratio_second_half": 0.51,
+  "median_gap_hours_first_half": 0.08,
+  "median_gap_hours_second_half": 0.08,
+  "dominant_rework_topic": "visualization/D3 coordinate systems",
+  "explicit_iteration_commits": 1,
+  "rollback_commits": 1,
+  "loc_first": 0,
+  "loc_last": 42398,
+  "test_ratio_first": 0.0,
+  "test_ratio_last": 0.045,
+  "max_gap_hours": 2280,
+  "max_gap_context": "major hiatus of approximately 95 days between mid-project sprint phases",
+  "contributor": "contributor-1",
+  "submitted_date": "2026-05-24",
+  "category": "sustained",
+  "notes": {
+    "generated_at": "2026-05-24T00:13:16.038733",
+    "commit_kind_distribution": {
+      "feat": 142,
+      "fix": 72,
+      "other": 65,
+      "chore": 19,
+      "docs": 9,
+      "refactor": 6,
+      "test": 1,
+      "revert": 1
+    },
+    "js_loc": 29901,
+    "css_loc": 12528,
+    "md_loc": 16369,
+    "test_loc": 1918,
+    "sprint_md_loc": 214
+  }
+}

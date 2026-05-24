@@ -1,0 +1,46 @@
+{
+  "project_name": "Warden",
+  "primary_language": "YAML/Shell",
+  "framework": "Ansible (DISA STIG + CIS Benchmark automation)",
+  "ai_assisted": "partial",
+  "total_commits": 132,
+  "date_range_days": 81,
+  "snapshot_count": 10,
+  "fix_feat_ratio_first_half": 0.40,
+  "fix_feat_ratio_second_half": 0.60,
+  "median_gap_hours_first_half": 0.5,
+  "median_gap_hours_second_half": 0.5,
+  "dominant_rework_topic": "compliance controls (STIG/CIS gap tasks)",
+  "explicit_iteration_commits": 2,
+  "rollback_commits": 2,
+  "loc_first": 6860,
+  "loc_last": 18500,
+  "test_ratio_first": 0.0,
+  "test_ratio_last": 0.02,
+  "max_gap_hours": 1735,
+  "max_gap_context": "1735 hours between last active day and post-release fix — project completed and released, then dormant",
+  "contributor": "contributor-1",
+  "submitted_date": "2026-05-24",
+  "category": "weekend-sprint",
+  "notes": {
+    "compliance_coverage": {
+      "stig_coverage_claimed": "96%+",
+      "cis_coverage_claimed": "99%+",
+      "final_compliance_controls": 236,
+      "stig_gap_tasks": 175,
+      "cis_gap_tasks": 61,
+      "frameworks": ["DISA STIG RHEL9 v2r3", "CIS Benchmark Level 1 RHEL9"]
+    },
+    "active_days": 13,
+    "peak_day_commits": 58,
+    "burst_pattern": "Two concentrated bursts: initial scaffolding phase and control completion + release phase",
+    "commit_style": "domain-bracket: [STIG GAP] / [CIS GAP] / [CRITICAL FIX]",
+    "stig_gap_commits": 38,
+    "multi_contributor": true,
+    "contributor_commit_counts": {
+      "contributor-a": 66,
+      "contributor-b": 64,
+      "contributor-c": 2
+    }
+  }
+}
