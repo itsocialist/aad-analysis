@@ -54,7 +54,7 @@ See [corpus/README.md](./corpus/README.md) for the full summary table with LOC, 
 
 ## Explore the Data
 
-**[View the interactive dashboard](./dashboard/index.html)** — open in any browser, no server required.
+**[View the interactive dashboard](./docs/index.html)** — open in any browser, no server required.
 
 The dashboard shows:
 - Project scale vs. duration (bubble chart)
@@ -82,7 +82,7 @@ aad-analysis/
 │       ├── muster.json
 │       ├── pitch.json
 │       └── ...
-└── dashboard/
+└── docs/
     └── index.html               # Self-contained single-file dashboard
 ```
 
