@@ -21,5 +21,11 @@
   "max_gap_context": "29-day calendar gap between Sprint 1 close and Sprint 2 catch-up commit \u2014 single large commit aggregated offline work",
   "contributor": "contributor-1",
   "submitted_date": "2026-05-24",
-  "category": "sustained"
+  "category": "sustained",
+  "security_quality_first": "Low",
+  "security_quality_last": "Medium-High",
+  "code_quality_first": "Low-Medium",
+  "code_quality_last": "High",
+  "planning_doc_present": true,
+  "planning_doc_loc_last": 502
 }

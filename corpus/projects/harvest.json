@@ -21,5 +21,7 @@
   "max_gap_context": "Gap between sprint phases (approximately 12 days)",
   "contributor": "contributor-1",
   "submitted_date": "2026-05-24",
-  "category": "multi-week"
+  "category": "multi-week",
+  "planning_doc_present": true,
+  "planning_doc_loc_last": 275
 }

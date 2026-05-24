@@ -96,9 +96,13 @@ aad-analysis/
 
 All corpus files conform to [schema/evolution-meta.schema.json](./schema/evolution-meta.schema.json) (JSON Schema draft-07).
 
-Required fields include: `project_name`, `primary_language`, `framework`, `ai_assisted` (yes/partial/unknown/no), `total_commits`, `date_range_days`, `fix_feat_ratio_first_half`, `fix_feat_ratio_second_half`, `loc_first`, `loc_last`, `test_ratio_first`, `test_ratio_last`, `max_gap_hours`, and more.
+**Required fields:** `project_name`, `primary_language`, `framework`, `ai_assisted` (yes/partial/unknown/no), `total_commits`, `date_range_days`, `fix_feat_ratio_first_half`, `fix_feat_ratio_second_half`, `loc_first`, `loc_last`, `test_ratio_first`, `test_ratio_last`, `max_gap_hours`, and more.
 
-Optional fields for contributors: `contributor` (handle), `submitted_date`, `category`, `notes`.
+**Quality arc fields** (optional but encouraged): `security_quality_first` / `security_quality_last`, `code_quality_first` / `code_quality_last` — rated Low / Low-Medium / Medium / Medium-High / High at genesis and HEAD respectively. These capture whether a project improved, regressed, or held steady in security posture and code quality.
+
+**Structure fields** (optional): `planning_doc_present` (boolean), `planning_doc_loc_last` (integer) — whether an active planning artifact (SPRINT.md, ROADMAP.md, etc.) existed and its size at HEAD.
+
+**Contributor fields** (optional): `contributor` (GitHub handle), `submitted_date`, `category`, `notes`.
 
 ---
 

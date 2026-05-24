@@ -191,9 +191,18 @@ or internal systems by name).
   "loc_first": N, "loc_last": N,
   "test_ratio_first": X.XX, "test_ratio_last": X.XX,
   "max_gap_hours": N,
-  "max_gap_context": "generic description only — no names, paths, or internal systems"
+  "max_gap_context": "generic description only — no names, paths, or internal systems",
+  "security_quality_first": "Low | Low-Medium | Medium | Medium-High | High",
+  "security_quality_last": "Low | Low-Medium | Medium | Medium-High | High",
+  "code_quality_first": "Low | Low-Medium | Medium | Medium-High | High",
+  "code_quality_last": "Low | Low-Medium | Medium | Medium-High | High",
+  "planning_doc_present": true,
+  "planning_doc_loc_last": N
 }
 ```
+
+Use the ratings you assigned in Step 2. `security_quality_first` and `code_quality_first`
+come from the genesis snapshot; `security_quality_last` and `code_quality_last` from HEAD.
 
 This JSON is what makes the corpus comparable — aggregate it across
 projects to look at distributions, not just single-project shapes.

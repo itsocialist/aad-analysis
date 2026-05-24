@@ -270,7 +270,16 @@
     </div>
   </div>
 
-  <!-- Card 6: Stats Grid -->
+  <!-- Card 6: Quality Arc -->
+  <div class="card">
+    <h2>Quality Arc: Genesis → HEAD</h2>
+    <p style="color:#8b949e;font-size:12px;margin:0 0 12px">Start rating (x) vs end rating (y). Points above the diagonal improved; on it = held steady; below = regressed. Circles = security, triangles = code quality.</p>
+    <div class="chart-container">
+      <canvas id="chart-quality"></canvas>
+    </div>
+  </div>
+
+  <!-- Card 7: Stats Grid -->
   <div class="card">
     <h2>Corpus Summary</h2>
     <div class="stats-grid" id="stats-grid"></div>
@@ -326,6 +335,12 @@ const CORPUS = [
     test_ratio_last: 0.135,
     max_gap_hours: 252,
     max_gap_context: "mid-project pause between sprint phases — 11-day real-world break before next sprint resumed",
+    security_quality_first: "Low",
+    security_quality_last: "High",
+    code_quality_first: "Medium",
+    code_quality_last: "High",
+    planning_doc_present: true,
+    planning_doc_loc_last: 222,
     category: "weekend-sprint"
   },
   {
@@ -349,6 +364,12 @@ const CORPUS = [
     test_ratio_last: 0.049,
     max_gap_hours: 705,
     max_gap_context: "29-day calendar gap between sprint phases — single large commit aggregated offline work",
+    security_quality_first: "Low",
+    security_quality_last: "Medium-High",
+    code_quality_first: "Low-Medium",
+    code_quality_last: "High",
+    planning_doc_present: true,
+    planning_doc_loc_last: 502,
     category: "sustained"
   },
   {
@@ -372,6 +393,12 @@ const CORPUS = [
     test_ratio_last: 0.025,
     max_gap_hours: 1146,
     max_gap_context: "47-day dormancy between initial burst and a later feature sprint",
+    security_quality_first: "Low",
+    security_quality_last: "Medium-High",
+    code_quality_first: "Low-Medium",
+    code_quality_last: "Medium-High",
+    planning_doc_present: true,
+    planning_doc_loc_last: 19,
     category: "sustained"
   },
   {
@@ -395,6 +422,12 @@ const CORPUS = [
     test_ratio_last: 0.55,
     max_gap_hours: 0.03,
     max_gap_context: "2 commits 2 minutes apart; full history predates git",
+    security_quality_first: "Medium-High",
+    security_quality_last: "Medium-High",
+    code_quality_first: "Medium-High",
+    code_quality_last: "Medium-High",
+    planning_doc_present: true,
+    planning_doc_loc_last: 68,
     category: "multi-week"
   },
   {
@@ -418,6 +451,12 @@ const CORPUS = [
     test_ratio_last: 0.045,
     max_gap_hours: 2280,
     max_gap_context: "major hiatus of approximately 95 days between mid-project sprint phases",
+    security_quality_first: "Low",
+    security_quality_last: "Low",
+    code_quality_first: "Medium",
+    code_quality_last: "High",
+    planning_doc_present: true,
+    planning_doc_loc_last: 521,
     category: "sustained"
   },
   {
@@ -441,6 +480,12 @@ const CORPUS = [
     test_ratio_last: 0.0107,
     max_gap_hours: 1174.71,
     max_gap_context: "dormancy period between initial scaffold and main development phase",
+    security_quality_first: "Low",
+    security_quality_last: "High",
+    code_quality_first: "Low",
+    code_quality_last: "Medium-High",
+    planning_doc_present: true,
+    planning_doc_loc_last: 870,
     category: "sustained"
   },
   {
@@ -464,6 +509,12 @@ const CORPUS = [
     test_ratio_last: 0.012,
     max_gap_hours: 256,
     max_gap_context: "256h gap between Sprint 4 and next active session",
+    security_quality_first: "Low",
+    security_quality_last: "Medium",
+    code_quality_first: "Low-Medium",
+    code_quality_last: "Medium-High",
+    planning_doc_present: true,
+    planning_doc_loc_last: 399,
     category: "multi-week"
   },
   {
@@ -487,6 +538,12 @@ const CORPUS = [
     test_ratio_last: 0.014,
     max_gap_hours: 2236,
     max_gap_context: "3-month hiatus after monetization sprint; project shifted to maintenance/strategic mode",
+    security_quality_first: "Low",
+    security_quality_last: "Medium-High",
+    code_quality_first: "Low",
+    code_quality_last: "High",
+    planning_doc_present: true,
+    planning_doc_loc_last: 1282,
     category: "sustained"
   },
   {
@@ -510,6 +567,12 @@ const CORPUS = [
     test_ratio_last: 0.020,
     max_gap_hours: 912,
     max_gap_context: "38-day gap between active development phases — integration/testing period off-main",
+    security_quality_first: "Low",
+    security_quality_last: "Medium-High",
+    code_quality_first: "Low",
+    code_quality_last: "Medium-High",
+    planning_doc_present: true,
+    planning_doc_loc_last: 4161,
     category: "multi-week"
   },
   {
@@ -533,6 +596,12 @@ const CORPUS = [
     test_ratio_last: 0.020,
     max_gap_hours: 1735,
     max_gap_context: "1735h between project release day and post-release fix — project completed, then dormant",
+    security_quality_first: "Low",
+    security_quality_last: "High",
+    code_quality_first: "Low",
+    code_quality_last: "Medium-High",
+    planning_doc_present: true,
+    planning_doc_loc_last: 866,
     category: "weekend-sprint"
   },
   {
@@ -556,6 +625,12 @@ const CORPUS = [
     test_ratio_last: 0.252,
     max_gap_hours: 288,
     max_gap_context: "Gap between sprint phases (approximately 12 days)",
+    security_quality_first: null,
+    security_quality_last: null,
+    code_quality_first: null,
+    code_quality_last: null,
+    planning_doc_present: true,
+    planning_doc_loc_last: 275,
     category: "multi-week"
   }
 ];
@@ -903,7 +978,115 @@ Chart.defaults.font.size = 12;
   });
 })();
 
-// ── Card 6: Stats Grid ────────────────────────────────────
+
+// ── Card 6: Quality Arc ───────────────────────────────────
+(function() {
+  const RATING = {"Low":1,"Low-Medium":2,"Medium":3,"Medium-High":4,"High":5};
+  const LABELS = ["","Low","Low-Medium","Medium","Medium-High","High"];
+
+  const secData = [], codeData = [];
+  CORPUS.forEach(p => {
+    if (p.security_quality_first && p.security_quality_last) {
+      secData.push({
+        x: RATING[p.security_quality_first],
+        y: RATING[p.security_quality_last],
+        label: p.project_name,
+        color: p.security_quality_last === p.security_quality_first ? "#d4a017"
+             : RATING[p.security_quality_last] > RATING[p.security_quality_first] ? "#3fb950" : "#f85149"
+      });
+    }
+    if (p.code_quality_first && p.code_quality_last) {
+      codeData.push({
+        x: RATING[p.code_quality_first],
+        y: RATING[p.code_quality_last],
+        label: p.project_name,
+        color: p.code_quality_last === p.code_quality_first ? "#d4a017"
+             : RATING[p.code_quality_last] > RATING[p.code_quality_first] ? "#3fb950" : "#f85149"
+      });
+    }
+  });
+
+  // diagonal reference line
+  const diagData = [{x:1,y:1},{x:5,y:5}];
+
+  new Chart(document.getElementById("chart-quality"), {
+    type: "scatter",
+    data: {
+      datasets: [
+        {
+          label: "diagonal (no change)",
+          data: diagData,
+          type: "line",
+          borderColor: "#30363d",
+          borderDash: [4,4],
+          borderWidth: 1,
+          pointRadius: 0,
+          fill: false,
+          order: 0
+        },
+        {
+          label: "Security quality",
+          data: secData,
+          pointStyle: "circle",
+          pointRadius: 8,
+          backgroundColor: secData.map(d => d.color + "cc"),
+          borderColor: secData.map(d => d.color),
+          borderWidth: 1.5,
+          order: 1
+        },
+        {
+          label: "Code quality",
+          data: codeData,
+          pointStyle: "triangle",
+          pointRadius: 8,
+          backgroundColor: codeData.map(d => d.color + "cc"),
+          borderColor: codeData.map(d => d.color),
+          borderWidth: 1.5,
+          order: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: "#8b949e", usePointStyle: true } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const d = ctx.raw;
+              return `${d.label}: ${LABELS[d.x]} → ${LABELS[d.y]}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: 0.5, max: 5.5,
+          title: { display: true, text: "Genesis rating", color: "#8b949e" },
+          ticks: {
+            callback: v => LABELS[v] || "",
+            stepSize: 1,
+            color: "#8b949e"
+          },
+          grid: { color: "#21262d" }
+        },
+        y: {
+          min: 0.5, max: 5.5,
+          title: { display: true, text: "HEAD rating", color: "#8b949e" },
+          ticks: {
+            callback: v => LABELS[v] || "",
+            stepSize: 1,
+            color: "#8b949e"
+          },
+          grid: { color: "#21262d" }
+        }
+      }
+    }
+  });
+})();
+
+// ── Card 7: Stats Grid ────────────────────────────────────
 (function() {
   const n = CORPUS.length;
 

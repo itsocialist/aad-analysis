@@ -21,5 +21,11 @@
   "max_gap_context": "dormancy period between initial scaffold and main development phase",
   "contributor": "contributor-1",
   "submitted_date": "2026-05-24",
-  "category": "sustained"
+  "category": "sustained",
+  "security_quality_first": "Low",
+  "security_quality_last": "High",
+  "code_quality_first": "Low",
+  "code_quality_last": "Medium-High",
+  "planning_doc_present": true,
+  "planning_doc_loc_last": 870
 }

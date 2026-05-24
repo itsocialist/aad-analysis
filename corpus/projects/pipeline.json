@@ -39,5 +39,11 @@
     "md_loc": 16369,
     "test_loc": 1918,
     "sprint_md_loc": 214
-  }
+  },
+  "security_quality_first": "Low",
+  "security_quality_last": "Low",
+  "code_quality_first": "Medium",
+  "code_quality_last": "High",
+  "planning_doc_present": true,
+  "planning_doc_loc_last": 521
 }

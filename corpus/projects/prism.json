@@ -41,5 +41,11 @@
     "cores_final": 57,
     "no_committed_secrets_found": true,
     "description": "AI-powered cognitive translation system — transforms unstructured content via a custom markup language into receiver-archetype-optimized visual HTML experiences"
-  }
+  },
+  "security_quality_first": "Low",
+  "security_quality_last": "Medium",
+  "code_quality_first": "Low-Medium",
+  "code_quality_last": "Medium-High",
+  "planning_doc_present": true,
+  "planning_doc_loc_last": 399
 }

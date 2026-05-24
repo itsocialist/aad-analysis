@@ -39,5 +39,11 @@
     "source_ts_files": 111,
     "planning_doc_lines": 1740,
     "co_authored_by": "AI assistant with large context window"
-  }
+  },
+  "security_quality_first": "Medium-High",
+  "security_quality_last": "Medium-High",
+  "code_quality_first": "Medium-High",
+  "code_quality_last": "Medium-High",
+  "planning_doc_present": true,
+  "planning_doc_loc_last": 68
 }

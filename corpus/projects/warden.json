@@ -42,5 +42,11 @@
       "contributor-b": 64,
       "contributor-c": 2
     }
-  }
+  },
+  "security_quality_first": "Low",
+  "security_quality_last": "High",
+  "code_quality_first": "Low",
+  "code_quality_last": "Medium-High",
+  "planning_doc_present": true,
+  "planning_doc_loc_last": 866
 }

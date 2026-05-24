@@ -125,6 +125,35 @@
       "type": "string",
       "description": "Human-readable description of what was happening during the longest gap"
     },
+    "security_quality_first": {
+      "type": "string",
+      "enum": ["Low", "Low-Medium", "Medium", "Medium-High", "High"],
+      "description": "Security quality rating at the genesis snapshot (key management, secrets hygiene, auth posture)"
+    },
+    "security_quality_last": {
+      "type": "string",
+      "enum": ["Low", "Low-Medium", "Medium", "Medium-High", "High"],
+      "description": "Security quality rating at HEAD snapshot"
+    },
+    "code_quality_first": {
+      "type": "string",
+      "enum": ["Low", "Low-Medium", "Medium", "Medium-High", "High"],
+      "description": "Code quality rating at the genesis snapshot (structure, test coverage, tech debt signals)"
+    },
+    "code_quality_last": {
+      "type": "string",
+      "enum": ["Low", "Low-Medium", "Medium", "Medium-High", "High"],
+      "description": "Code quality rating at HEAD snapshot"
+    },
+    "planning_doc_present": {
+      "type": "boolean",
+      "description": "Whether a SPRINT.md, PLAN.md, ROADMAP.md, or equivalent planning artifact exists at HEAD"
+    },
+    "planning_doc_loc_last": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Lines of code in the planning document at HEAD (0 if absent)"
+    },
     "contributor": {
       "type": "string",
       "description": "GitHub handle of the person submitting to the corpus"

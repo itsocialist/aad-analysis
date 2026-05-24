@@ -21,5 +21,11 @@
   "max_gap_context": "mid-project pause between sprint phases \u2014 WIP save-state left mid-feature followed by an 11-day real-world break before the next sprint resumed",
   "contributor": "contributor-1",
   "submitted_date": "2026-05-24",
-  "category": "weekend-sprint"
+  "category": "weekend-sprint",
+  "security_quality_first": "Low",
+  "security_quality_last": "High",
+  "code_quality_first": "Medium",
+  "code_quality_last": "High",
+  "planning_doc_present": true,
+  "planning_doc_loc_last": 222
 }
