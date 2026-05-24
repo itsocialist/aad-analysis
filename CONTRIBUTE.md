@@ -2,6 +2,30 @@
 
 Thank you for contributing to the AI-Assisted Development corpus. Every submission — whether the project used AI or not — helps build a richer picture of how software gets built today.
 
+---
+
+## Privacy — what gets collected and what doesn't
+
+**What the analysis produces:**
+- Commit counts, LOC counts, fix/feat ratios, gap durations — aggregate statistics only
+- A short free-text narrative you review before sharing
+
+**What the analysis never collects:**
+- Source code
+- File paths
+- Commit message text
+- Real contributor names or email addresses (these are replaced with `contributor-1`, `contributor-2`, etc. automatically)
+
+**One thing to check before you run:** scan your git history for accidentally committed secrets.
+
+```bash
+git log --all -S "password\|secret\|token\|apikey" --oneline | head -20
+```
+
+If anything appears, address it before running the analysis. The analysis tool does not read `.env` or credential files, but it reads git history — if a secret was committed, it is in that history.
+
+---
+
 ## Prerequisites
 
 - [Claude Code](https://claude.ai/code) (free tier works)
@@ -9,15 +33,15 @@ Thank you for contributing to the AI-Assisted Development corpus. Every submissi
 
 ## Step-by-step guide
 
-### Step 1 — Run COLLECT_PROMPT.md in your project root
+### Step 1 — Run AAD_ANALYZE_PROMPT.md in your project root
 
-Open a Claude Code session at the root of your git repository and paste the full contents of [COLLECT_PROMPT.md](./COLLECT_PROMPT.md).
+Open a Claude Code session at the root of your git repository and paste the full contents of [AAD_ANALYZE_PROMPT.md](./AAD_ANALYZE_PROMPT.md).
 
 Claude will analyze your commit history and produce several output files under `.archive/evolution-report/`.
 
 ### Step 2 — Locate your contribution file
 
-The prompt produces `.archive/evolution-report/evolution-meta.json`. That is your contribution file. It contains aggregate metrics only — no source code, no file paths, no commit messages.
+The analysis produces `.archive/evolution-report/evolution-meta.json`. That is your contribution file. It contains aggregate metrics only — no source code, no file paths, no commit messages, no contributor identities.
 
 Example output:
 ```json
@@ -32,14 +56,14 @@ Example output:
 }
 ```
 
-### Step 3 (optional) — Anonymize
+### Step 3 — Review and anonymize before sharing
 
-If you prefer not to identify the project:
-- Change `project_name` to something generic (e.g. `"python-api-service-2026"`)
-- Generalize `max_gap_context` to avoid revealing organizational details
-- You can leave `framework` vague (e.g. `"Python web framework"`)
+Open `evolution-meta.json` and review these two fields before submitting:
 
-The fields that matter most for corpus analysis are the numeric ones (commits, LOC, ratios, gaps) — these do not need to be altered.
+- **`project_name`** — use a generic name or codename if you prefer not to identify the project (e.g. `"python-api-service-2026"`, `"ts-webapp-internal"`). The numeric fields matter more than the name.
+- **`max_gap_context`** — this is the only free-text field. Keep it generic: "break between sprints" rather than referencing team members, clients, or internal system names.
+
+Everything else is a number. Contributor emails were replaced with handles automatically in Step 1. Commit message text was never stored.
 
 ### Step 4 — Validate
 
@@ -53,7 +77,7 @@ On success you will see a one-line summary. On failure, each error is labeled wi
 
 If you don't have the repo cloned yet:
 ```bash
-git clone https://github.com/briandawson/aad-analysis.git
+git clone https://github.com/itsocialist/aad-analysis.git
 cd aad-analysis
 python3 schema/validate.py /path/to/your/evolution-meta.json
 ```
@@ -91,15 +115,18 @@ We review all submissions within a few days.
 
 ---
 
-## Privacy
+## Privacy summary
 
-The schema captures **aggregate metrics only**:
-- No source code is collected
-- No file paths are collected
-- No commit messages are collected
-- LOC counts and ratios are summary statistics
+| What | Collected? |
+|------|-----------|
+| Source code | No |
+| File paths | No |
+| Commit message text | No |
+| Contributor names / emails | No — replaced with contributor-1, contributor-2, etc. |
+| Commit counts, LOC, ratios | Yes — these are the corpus signals |
+| `max_gap_context` | Yes — free text you write and review before submitting |
 
-The most sensitive field is `max_gap_context`, which is a free-text description of what was happening during the longest commit gap. You can generalize this or leave it blank if preferred.
+If you have any doubt about what's in your `evolution-meta.json` before submitting, open it and read it. It's a small JSON file. Everything in it should be something you're comfortable making public.
 
 ---
 

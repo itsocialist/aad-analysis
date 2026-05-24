@@ -2,19 +2,23 @@
 
 A community corpus of AI-assisted development patterns, collected via git archaeology and contributed by the community.
 
-The corpus captures *how* software gets built — not just the end state. Each project contributes aggregate metrics: commit velocity, fix/feat ratios, test coverage trajectories, gap patterns, and LOC growth arcs. No source code, no file paths, no commit messages.
+The corpus captures *how* software gets built — not just the end state. Each project contributes aggregate metrics: commit velocity, fix/feat ratios, test coverage trajectories, gap patterns, and LOC growth arcs.
+
+**What the analysis collects:** counts, ratios, and durations — nothing else.  
+**What it never collects:** source code, file paths, commit message text, or contributor identities (emails are replaced with anonymous handles automatically).
 
 ---
 
 ## Quick Start
 
-Run [COLLECT_PROMPT.md](./COLLECT_PROMPT.md) in any git repo with Claude Code to generate your `evolution-meta.json`:
+Run [AAD_ANALYZE_PROMPT.md](./AAD_ANALYZE_PROMPT.md) in any git repo with Claude Code to generate your `evolution-meta.json`:
 
-1. Open Claude Code at the root of any git repository
-2. Paste the full contents of `COLLECT_PROMPT.md`
-3. Claude analyzes your commit history and writes `.archive/evolution-report/evolution-meta.json`
+1. **Check your history first:** `git log --all -S "password\|token\|secret" --oneline | head -20` — address anything that appears
+2. Open Claude Code at the root of any git repository
+3. Paste the full contents of `AAD_ANALYZE_PROMPT.md`
+4. Claude analyzes your commit history and writes `.archive/evolution-report/evolution-meta.json`
 
-That JSON file is your contribution.
+That JSON file is your contribution. It contains aggregate statistics only — no code, paths, messages, or identities.
 
 ---
 
@@ -22,9 +26,9 @@ That JSON file is your contribution.
 
 **3 steps:**
 
-1. **Run the prompt** — paste [COLLECT_PROMPT.md](./COLLECT_PROMPT.md) into a Claude Code session at your repo root
-2. **Validate** — `python3 schema/validate.py .archive/evolution-report/evolution-meta.json`
-3. **Open a PR** — copy to `corpus/projects/your-project-name.json` and submit a PR titled `corpus: add [project-name]`
+1. **Analyze** — paste [AAD_ANALYZE_PROMPT.md](./AAD_ANALYZE_PROMPT.md) into a Claude Code session at your repo root
+2. **Review** — open `.archive/evolution-report/evolution-meta.json` and confirm it contains nothing you don't want to share (see [CONTRIBUTE.md](./CONTRIBUTE.md#privacy-summary))
+3. **Submit** — validate with `python3 schema/validate.py .archive/evolution-report/evolution-meta.json`, copy to `corpus/projects/your-project-name.json`, open a PR
 
 Full details in [CONTRIBUTE.md](./CONTRIBUTE.md).
 
@@ -71,17 +75,17 @@ The dashboard shows:
 ```
 aad-analysis/
 ├── README.md                    # This file
-├── COLLECT_PROMPT.md            # Paste into Claude Code to collect your data
+├── AAD_ANALYZE_PROMPT.md        # Paste into Claude Code to analyze your repo
 ├── CONTRIBUTE.md                # How to submit a contribution
 ├── schema/
 │   ├── evolution-meta.schema.json   # JSON Schema draft-07
 │   └── validate.py                  # CLI validator (auto-installs jsonschema)
+├── scripts/
+│   └── collect_metrics.py       # Deterministic git metrics extractor (optional)
 ├── corpus/
 │   ├── README.md                # Summary table + stats
 │   └── projects/                # One JSON per project
-│       ├── muster.json
-│       ├── pitch.json
-│       └── ...
+│       └── *.json
 └── docs/
     └── index.html               # Self-contained single-file dashboard
 ```
