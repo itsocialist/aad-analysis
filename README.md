@@ -11,12 +11,17 @@ The corpus captures *how* software gets built — not just the end state. Each p
 
 ## Quick Start
 
-Run [AAD_ANALYZE_PROMPT.md](./AAD_ANALYZE_PROMPT.md) in any git repo with Claude Code to generate your `evolution-meta.json`:
+Two ways to run the analysis:
+
+**Option A — Paste prompt** (simplest): open Claude Code at your repo root, paste [AAD_ANALYZE_PROMPT.md](./AAD_ANALYZE_PROMPT.md).
+
+**Option B — Custom slash command** (reusable): copy [AAD_ANALYZE_AGENT.md](./AAD_ANALYZE_AGENT.md) to `.claude/commands/aad-analyze.md` in any repo, then run `/aad-analyze` in any Claude Code session there.
+
+Either way:
 
 1. **Check your history first:** `git log --all -S "password\|token\|secret" --oneline | head -20` — address anything that appears
-2. Open Claude Code at the root of any git repository
-3. Paste the full contents of `AAD_ANALYZE_PROMPT.md`
-4. Claude analyzes your commit history and writes `.archive/evolution-report/evolution-meta.json`
+2. Run the analysis — it writes output to `.archive/evolution-report/`
+3. Review `.archive/evolution-report/evolution-meta.json` before sharing
 
 That JSON file is your contribution. It contains aggregate statistics only — no code, paths, messages, or identities.
 
@@ -76,6 +81,7 @@ The dashboard shows:
 aad-analysis/
 ├── README.md                    # This file
 ├── AAD_ANALYZE_PROMPT.md        # Paste into Claude Code to analyze your repo
+├── AAD_ANALYZE_AGENT.md         # Agent task spec — use as a custom slash command
 ├── CONTRIBUTE.md                # How to submit a contribution
 ├── schema/
 │   ├── evolution-meta.schema.json   # JSON Schema draft-07
